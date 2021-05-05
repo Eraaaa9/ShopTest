@@ -2,7 +2,6 @@ package com.example.services;
 
 import com.example.IntInput;
 import com.example.models.Customer;
-import com.example.models.Product;
 
 import java.sql.*;
 import java.util.Scanner;
@@ -69,7 +68,9 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             if(affectedRows > 0){
                 try(ResultSet rs = pstmt.getGeneratedKeys ()){
                     if(rs.next ()){
-                        System.out.println ("smth");
+                        System.out.println ("New user registered. Welcome");
+                        customer.setName (name);
+                        customer.setPassword (password);
                     }
                 }catch (SQLException e){
                     System.out.println (e.getMessage ());
@@ -91,11 +92,12 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             if(name.equals("0")) return authorizeUser();
             System.out.println("Enter your password: ");
             var password = scanner.nextLine();
-            String SQL = String.format ("SELECT name, password FROM users WHERE name = %s, password = $s", name, password);
+            String SQL = String.format ("SELECT name, password FROM users WHERE name = '%s' AND password = '%s'", name, password);
+            System.out.println (SQL);
             try(Connection connection = DriverManager.getConnection (dBUrl, dBUser, dBPassword);
                 Statement statement = connection.createStatement ();
                 ResultSet rs = statement.executeQuery (SQL)){
-                if(rs.next ()){
+                if (rs.next ()){
                     customer = new Customer (name, password);
                     return customer;
                 }
