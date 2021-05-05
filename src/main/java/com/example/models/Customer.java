@@ -10,11 +10,13 @@ public class Customer{
     private Cart cart;
     public Customer() {
         cart = new Cart();
-        cashAmount = 0;
     }
 
-
-    public static ArrayList<Customer> users = new ArrayList<>();
+    public Customer (String name, String password) {
+        this();
+        this.name = name;
+        this.password = password;
+    }
 
     public String getName() {
         return name;

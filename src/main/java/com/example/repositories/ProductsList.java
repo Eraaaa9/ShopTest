@@ -23,7 +23,7 @@ public class ProductsList {
     }
 
     public ProductsList(String name) {
-        super();
+        this();
         this.name = name;
     }
     public ProductsList(){

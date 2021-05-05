@@ -2,11 +2,17 @@ package com.example.services;
 
 import com.example.IntInput;
 import com.example.models.Customer;
+import com.example.models.Product;
+
+import java.sql.*;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AuthorizationServiceImpl implements AuthorizationService {
+    String dBUrl = "jdbc:postgresql://localhost/ExampleShop";
+    String dBUser = "postgres";
+    String dBPassword = "admin";
 
     private final Scanner scanner = new Scanner(System.in);
     public Customer authorizeUser() {
@@ -54,11 +60,30 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
             }
         }
-        Customer.users.add(customer);
+        String SQL = "INSERT INTO users(name, password) VALUES (?, ?)";
+        try(Connection connection = DriverManager.getConnection (dBUrl, dBUser, dBPassword);
+            PreparedStatement pstmt = connection.prepareStatement (SQL, Statement.RETURN_GENERATED_KEYS)){
+            pstmt.setString (1, name);
+            pstmt.setString (2, password);
+            int affectedRows = pstmt.executeUpdate ();
+            if(affectedRows > 0){
+                try(ResultSet rs = pstmt.getGeneratedKeys ()){
+                    if(rs.next ()){
+                        System.out.println ("smth");
+                    }
+                }catch (SQLException e){
+                    System.out.println (e.getMessage ());
+                }
+            }
+        }
+        catch (SQLException e){
+            System.out.println (e.getMessage ());
+        }
         return customer;
     }
 
     private Customer loginUser() {
+        Customer customer;
         while(true) {
             System.out.print("Enter your name: ");
             System.out.println("           or press 0 to get back.");
@@ -66,12 +91,20 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             if(name.equals("0")) return authorizeUser();
             System.out.println("Enter your password: ");
             var password = scanner.nextLine();
-            for (var customer : Customer.users) {
-                if (customer.getName().equals(name) && customer.getPassword().equals(password)) {
+            String SQL = String.format ("SELECT name, password FROM users WHERE name = %s, password = $s", name, password);
+            try(Connection connection = DriverManager.getConnection (dBUrl, dBUser, dBPassword);
+                Statement statement = connection.createStatement ();
+                ResultSet rs = statement.executeQuery (SQL)){
+                if(rs.next ()){
+                    customer = new Customer (name, password);
                     return customer;
                 }
             }
+            catch (SQLException e){
+                System.out.println (e.getMessage ());
+            }
             System.out.println("Incorrect password or name. Try again.");
         }
+
     }
 }
