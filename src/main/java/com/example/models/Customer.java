@@ -1,7 +1,5 @@
 package com.example.models;
 
-import java.util.ArrayList;
-
 public class Customer{
     private String name;
     private String cardNumber;
@@ -58,18 +56,6 @@ public class Customer{
         this.cart = cart;
     }
 
-    public void withdraw(int amount){
-        if(cashAmount < amount){
-            System.out.println("Insufficient funds.");
-        } else {
-            cashAmount -= amount;
-            System.out.println("New balance: " + cashAmount);
-        }
-    }
-    public void deposit(int amount){
-        cashAmount += amount;
-        System.out.println("New balance: " + cashAmount);
-    }
     public String showBalance(){
         return ("Current balance is: " + cashAmount);
     }
@@ -78,7 +64,7 @@ public class Customer{
         result += name;
         result += " ";
         result += showBalance ();
-        if(cardNumber!= null){
+        if(cardNumber != null){
             result += "\nCard number: ";
             result += cardNumber;
         }

@@ -9,11 +9,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AuthorizationServiceImpl implements AuthorizationService {
-    String dBUrl = "jdbc:postgresql://localhost/ExampleShop";
-    String dBUser = "postgres";
-    String dBPassword = "admin";
-
+    private final String dBUrl = "jdbc:postgresql://localhost/ExampleShop";
+    private final String dBUser = "postgres";
+    private final String dBPassword = "admin";
     private final Scanner scanner = new Scanner(System.in);
+
     public Customer authorizeUser() {
         System.out.println("Enter 1 for log in or 2 for Sign up or 0 to Exit");
         Customer customer;
@@ -33,6 +33,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         }
         return customer;
     }
+
     private Customer signUpUser() {
         Customer customer = new Customer();
         System.out.println("Enter your name: ");
@@ -44,22 +45,24 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         boolean accepted = false;
         while(!accepted) {
             System.out.println("Add card number (Optional, press Enter to skip)");
-            String cardNumber = scanner.nextLine();
-            if (cardNumber.equals("")) {
+            String rawCardNumber = scanner.nextLine();
+            if (rawCardNumber.equals("")) {
                 break;
             } else {
                 Pattern pattern = Pattern.compile("^[0-9 ]{16,19}");
-                Matcher matcher = pattern.matcher(cardNumber);
+                Matcher matcher = pattern.matcher(rawCardNumber);
                 accepted = matcher.matches();
                 if (accepted) {
-                    customer.setCardNumber(cardNumber);
+                    String formattedCardNumber = rawCardNumber.replaceAll ("\\s", "");
+                    customer.setCardNumber(formattedCardNumber);
+                    addToDatabase(customer, "card number", formattedCardNumber);
                 } else {
                     System.out.println("Wrong card number format try again");
                 }
 
             }
         }
-        String SQL = "INSERT INTO users(name, password) VALUES (?, ?)";
+        String SQL = "INSERT INTO users(name, password, balance) VALUES (?, ?, 0)";
         try(Connection connection = DriverManager.getConnection (dBUrl, dBUser, dBPassword);
             PreparedStatement pstmt = connection.prepareStatement (SQL, Statement.RETURN_GENERATED_KEYS)){
             pstmt.setString (1, name);
@@ -71,6 +74,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                         System.out.println ("New user registered. Welcome");
                         customer.setName (name);
                         customer.setPassword (password);
+                        customer.setCashAmount (0);
                     }
                 }catch (SQLException e){
                     System.out.println (e.getMessage ());
@@ -83,6 +87,10 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         return customer;
     }
 
+    private void addToDatabase (Customer customer, String type, String value) {
+
+    }
+
     private Customer loginUser() {
         Customer customer;
         while(true) {
@@ -92,13 +100,13 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             if(name.equals("0")) return authorizeUser();
             System.out.println("Enter your password: ");
             var password = scanner.nextLine();
-            String SQL = String.format ("SELECT name, password FROM users WHERE name = '%s' AND password = '%s'", name, password);
-            System.out.println (SQL);
+            String SQL = String.format ("SELECT * FROM users WHERE name = '%s' AND password = '%s'", name, password);
             try(Connection connection = DriverManager.getConnection (dBUrl, dBUser, dBPassword);
                 Statement statement = connection.createStatement ();
                 ResultSet rs = statement.executeQuery (SQL)){
                 if (rs.next ()){
                     customer = new Customer (name, password);
+                    customer.setCashAmount (rs.getInt ("balance"));
                     return customer;
                 }
             }
@@ -107,6 +115,5 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             }
             System.out.println("Incorrect password or name. Try again.");
         }
-
     }
 }
