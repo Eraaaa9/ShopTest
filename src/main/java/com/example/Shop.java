@@ -13,7 +13,8 @@ public class Shop {
         PaymentService paymentService = new PaymentServiceImpl ();
         CartService cartService = new CartServiceImpl (paymentService);
         AccountHandleService accountHandleService = new AccountHandleServiceImpl ();
-        MainMenu mainMenu = new MainMenu (productListService, productCatalogService, authorizationService, accountHandleService, cartService);
+        MainMenu mainMenu = new MainMenu (productListService, productCatalogService, authorizationService,
+                accountHandleService, cartService);
         while (true) {
             mainMenu.showMenu (customer);
         }

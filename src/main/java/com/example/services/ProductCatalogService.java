@@ -1,7 +1,7 @@
 package com.example.services;
 
-import com.example.repositories.ProductCatalog;
-import com.example.repositories.ProductsList;
+import com.example.models.ProductCatalog;
+import com.example.models.ProductsList;
 
 public interface ProductCatalogService {
     ProductCatalog fill();

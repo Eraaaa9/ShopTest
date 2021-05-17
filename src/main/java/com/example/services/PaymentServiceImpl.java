@@ -1,7 +1,6 @@
 package com.example.services;
 
 import com.example.IntInput;
-import com.example.MainMenu;
 import com.example.models.Customer;
 import com.example.models.Product;
 
@@ -88,7 +87,8 @@ public class PaymentServiceImpl implements PaymentService {
             payByCash (customer);
         }else {
             System.out.println ("No more suggestions");
-            System.out.println ("Add some money or use card.2");
+            System.out.println ("Add some money or use card.");
+            
         }
     }
 }

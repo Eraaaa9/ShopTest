@@ -2,8 +2,8 @@ package com.example.services;
 
 import com.example.IntInput;
 import com.example.models.Product;
-import com.example.repositories.ProductCatalog;
-import com.example.repositories.ProductsList;
+import com.example.models.ProductCatalog;
+import com.example.models.ProductsList;
 import java.sql.*;
 import java.util.Scanner;
 

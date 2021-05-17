@@ -1,7 +1,7 @@
 package com.example;
 
 import com.example.models.Customer;
-import com.example.repositories.ProductsList;
+import com.example.models.ProductsList;
 import com.example.services.*;
 
 public class MainMenu {

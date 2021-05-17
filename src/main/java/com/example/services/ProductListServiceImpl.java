@@ -3,7 +3,7 @@ package com.example.services;
 import com.example.IntInput;
 import com.example.models.Customer;
 import com.example.models.Product;
-import com.example.repositories.ProductsList;
+import com.example.models.ProductsList;
 import java.util.ArrayList;
 
 public class ProductListServiceImpl implements ProductListService {
@@ -41,6 +41,7 @@ public class ProductListServiceImpl implements ProductListService {
             default:
                 return;
         }
+
     }
 
     public String listProducts(ProductsList productsList, int page){
