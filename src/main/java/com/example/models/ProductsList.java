@@ -28,7 +28,7 @@ public class ProductsList {
     }
     public ProductsList(){
         products = new ArrayList<>();
-        name = null;
+        name = "";
     }
     public void addProduct(Product product){
         products.add(product);

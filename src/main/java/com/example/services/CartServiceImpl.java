@@ -1,7 +1,7 @@
 package com.example.services;
 
-import com.example.IntInput;
-import com.example.MainMenu;
+import com.example.helpers.IntInput;
+import com.example.helpers.PaginationPrinter;
 import com.example.models.Customer;
 import com.example.models.Product;
 import java.util.List;
@@ -41,6 +41,9 @@ public class CartServiceImpl implements CartService {
         int maxPage = (int) Math.ceil ((double) items.size ()/3);
         System.out.println ("Page " + page + "/" + maxPage);
         System.out.println (listCartProducts (items, page));
+        if(items.isEmpty()){
+            return;
+        }
         int input =IntInput.readInput ();
         switch (input){
             case 1:
@@ -74,11 +77,7 @@ public class CartServiceImpl implements CartService {
     private String listCartProducts(List<Product> products, int page){
         if(products.isEmpty())return "Cart is empty";
         StringBuilder result = new StringBuilder();
-            for(int i = 1; i < 4; i++){
-                if(((i + (page-1) * 3)) > products.size ())break;
-                result.append (i).append (".");
-                result.append (products.get ((i + (page - 1) * 3) - 1)).append (" ");
-            }
+        PaginationPrinter.getFirstOptions(products, page, result);
         result.append("4.Next page ");
         result.append("5.Previous page ");
         result.append("6.Back ");

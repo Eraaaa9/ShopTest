@@ -1,6 +1,6 @@
 package com.example.services;
 
-import com.example.IntInput;
+import com.example.helpers.IntInput;
 import com.example.models.Customer;
 import com.example.models.Product;
 
