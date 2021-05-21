@@ -1,9 +1,13 @@
 package com.example.models;
 
+import lombok.Data;
+
+@Data
 public class Customer{
+    private int id;
     private String name;
     private String cardNumber;
-    private int cashAmount;
+    private int balance;
     private String password;
     private Cart cart;
     public Customer() {
@@ -16,48 +20,8 @@ public class Customer{
         this.password = password;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCardNumber() {
-        return cardNumber;
-    }
-
-    public void setCardNumber(String cardNumber) {
-        this.cardNumber = cardNumber;
-    }
-
-    public int getCashAmount() {
-        return cashAmount;
-    }
-
-    public void setCashAmount(int cashAmount) {
-        this.cashAmount = cashAmount;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Cart getCart() {
-        return cart;
-    }
-
-    public void setCart(Cart cart) {
-        this.cart = cart;
-    }
-
     public String showBalance(){
-        return ("Current balance is: " + cashAmount);
+        return ("Current balance is: " + balance);
     }
     public String toString(){
         String result = "";

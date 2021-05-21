@@ -11,6 +11,9 @@ public class PaginationPrinter {
             result.append (i).append (".");
             result.append (products.get ((i + (page - 1) * 3) - 1)).append (" ");
         }
+        result.append("4.Next page ");
+        result.append("5.Previous page ");
+        result.append ("6.Back");
     }
 }
 

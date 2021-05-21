@@ -1,18 +1,22 @@
 package com.example.services;
 
+import com.example.helpers.CreditCardChecker;
 import com.example.helpers.IntInput;
 import com.example.models.Customer;
+import com.example.repositories.DataManager;
 
 import java.sql.*;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class AuthorizationServiceImpl implements AuthorizationService {
-    private final String dBUrl = "jdbc:postgresql://localhost/ExampleShop";
-    private final String dBUser = "postgres";
-    private final String dBPassword = "admin";
     private final Scanner scanner = new Scanner(System.in);
+    private final CreditCardChecker creditCardChecker;
+    private final DataManager dataManager;
+
+    public AuthorizationServiceImpl(CreditCardChecker creditCardChecker, DataManager dataManager) {
+        this.creditCardChecker = creditCardChecker;
+        this.dataManager = dataManager;
+    }
 
     public Customer authorizeUser() {
         System.out.println("Enter 1 for log in or 2 for Sign up or 0 to Exit");
@@ -37,81 +41,29 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     private Customer signUpUser() {
         Customer customer = new Customer();
         System.out.println("Enter your name: ");
-        var name = scanner.nextLine();
+        String name = scanner.nextLine();
         customer.setName(name);
         System.out.println("Enter your password: ");
-        var password = scanner.nextLine();
+        String password = scanner.nextLine();
         customer.setPassword(password);
-        boolean accepted = false;
-        while(!accepted) {
-            System.out.println("Add card number (Optional, press Enter to skip)");
-            String rawCardNumber = scanner.nextLine();
-            if (rawCardNumber.equals("")) {
-                break;
-            } else {
-                Pattern pattern = Pattern.compile("^[0-9 ]{16,19}");
-                Matcher matcher = pattern.matcher(rawCardNumber);
-                accepted = matcher.matches();
-                if (accepted) {
-                    String formattedCardNumber = rawCardNumber.replaceAll ("\\s", "");
-                    customer.setCardNumber(formattedCardNumber);
-                    addToDatabase(customer, "card number", formattedCardNumber);
-                } else {
-                    System.out.println("Wrong card number format try again");
-                }
-
-            }
-        }
-        String SQL = "INSERT INTO users(name, password, balance) VALUES (?, ?, 0)";
-        try(Connection connection = DriverManager.getConnection (dBUrl, dBUser, dBPassword);
-            PreparedStatement pstmt = connection.prepareStatement (SQL, Statement.RETURN_GENERATED_KEYS)){
-            pstmt.setString (1, name);
-            pstmt.setString (2, password);
-            int affectedRows = pstmt.executeUpdate ();
-            if(affectedRows > 0){
-                try(ResultSet rs = pstmt.getGeneratedKeys ()){
-                    if(rs.next ()){
-                        System.out.println ("New user registered. Welcome");
-                        customer.setName (name);
-                        customer.setPassword (password);
-                        customer.setCashAmount (0);
-                    }
-                }catch (SQLException e){
-                    System.out.println (e.getMessage ());
-                }
-            }
-        }
-        catch (SQLException e){
-            System.out.println (e.getMessage ());
-        }
+        String cardNumber = creditCardChecker.creditCardCheck(customer);
+        customer.setCardNumber(cardNumber);
+        dataManager.addUserToDatabase(name, password, cardNumber);
         return customer;
     }
 
-    private void addToDatabase (Customer customer, String type, String value) {
-
-    }
-
     private Customer loginUser() {
-        Customer customer;
+        Customer customer = null;
         while(true) {
             System.out.print("Enter your name: ");
             System.out.println("           or press 0 to get back.");
-            var name = scanner.nextLine();
+            String name = scanner.nextLine();
             if(name.equals("0")) return authorizeUser();
             System.out.println("Enter your password: ");
-            var password = scanner.nextLine();
-            String SQL = String.format ("SELECT * FROM users WHERE name = '%s' AND password = '%s'", name, password);
-            try(Connection connection = DriverManager.getConnection (dBUrl, dBUser, dBPassword);
-                Statement statement = connection.createStatement ();
-                ResultSet rs = statement.executeQuery (SQL)){
-                if (rs.next ()){
-                    customer = new Customer (name, password);
-                    customer.setCashAmount (rs.getInt ("balance"));
-                    return customer;
-                }
-            }
-            catch (SQLException e){
-                System.out.println (e.getMessage ());
+            String password = scanner.nextLine();
+            customer = dataManager.loginInDatabase(name, password);
+            if(customer != null){
+                return customer;
             }
             System.out.println("Incorrect password or name. Try again.");
         }

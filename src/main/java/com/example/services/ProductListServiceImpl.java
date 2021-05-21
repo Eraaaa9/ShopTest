@@ -8,6 +8,11 @@ import com.example.models.ProductsList;
 import java.util.ArrayList;
 
 public class ProductListServiceImpl implements ProductListService {
+    private final PaginationPrinter paginationPrinter;
+
+    public ProductListServiceImpl(PaginationPrinter paginationPrinter) {
+        this.paginationPrinter = paginationPrinter;
+    }
 
     @Override
     public void showGoods(ProductsList productsList, Customer customer, int page) {
@@ -40,7 +45,6 @@ public class ProductListServiceImpl implements ProductListService {
                 showGoods (productsList, customer, page - 1 );
                 break;
             default:
-                return;
         }
 
     }
@@ -48,10 +52,7 @@ public class ProductListServiceImpl implements ProductListService {
     public String listProducts(ProductsList productsList, int page){
         StringBuilder result = new StringBuilder();
         ArrayList<Product> products = productsList.getProducts ();
-        PaginationPrinter.getFirstOptions(products, page, result);
-        result.append("4.Next page ");
-        result.append("5.Previous page ");
-        result.append ("6.Back");
+        paginationPrinter.getFirstOptions(products, page, result);
         return result.toString ();
     }
     @Override

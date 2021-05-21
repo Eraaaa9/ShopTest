@@ -5,7 +5,7 @@ import com.example.models.Customer;
 import com.example.repositories.DataManager;
 
 public class AccountHandleServiceImpl implements AccountHandleService {
-    private DataManager dataManager;
+    private final DataManager dataManager;
 
     public AccountHandleServiceImpl(DataManager dataManager) {
         this.dataManager = dataManager;
@@ -41,21 +41,19 @@ public class AccountHandleServiceImpl implements AccountHandleService {
         System.out.println("4. Back to main menu ");
     }
     private void withdraw (Customer customer, int withdrawAmount) {
-        if(customer.getCashAmount () < withdrawAmount){
+        if(customer.getBalance() < withdrawAmount){
             System.out.println("Insufficient funds.");
         } else {
-            customer.setCashAmount (customer.getCashAmount () - withdrawAmount);
+            customer.setBalance(customer.getBalance() - withdrawAmount);
             dataManager.updateBalance (customer, -withdrawAmount);
-            System.out.println ("New balance: " + customer.getCashAmount ());
+            System.out.println ("New balance: " + customer.getBalance());
         }
     }
 
     private void deposit (Customer customer, int depositAmount) {
-        int newValue = customer.getCashAmount () + depositAmount;
-        customer.setCashAmount (newValue);
+        int newValue = customer.getBalance() + depositAmount;
+        customer.setBalance(newValue);
         dataManager.updateBalance (customer, depositAmount);
         System.out.println("New balance: " + newValue);
     }
-
-
 }

@@ -25,7 +25,6 @@ public class PaymentServiceImpl implements PaymentService {
                 payByCard(customer);
                 break;
             default:
-                return;
         }
     }
 
@@ -56,11 +55,11 @@ public class PaymentServiceImpl implements PaymentService {
         for(var item : customer.getCart ().getItems ()){
             totalSum += item.getPrice ();
         }
-        int payment = customer.getCashAmount () - totalSum;
+        int payment = customer.getBalance () - totalSum;
 
         if(payment >= 0){
-            customer.setCashAmount (payment);
-            System.out.println ("Successfully paid. Thank you. Your current balance is: " + customer.getCashAmount ());
+            customer.setBalance(payment);
+            System.out.println ("Successfully paid. Thank you. Your current balance is: " + customer.getBalance ());
         } else {
             System.out.println ("Not enough cash");
             makeSuggestion(customer, totalSum);
@@ -71,7 +70,7 @@ public class PaymentServiceImpl implements PaymentService {
     private void makeSuggestion (Customer customer, int totalSum) {
         List<Product> toRemove = new ArrayList<> ();
         for(var item : customer.getCart ().getItems ()){
-            if(customer.getCashAmount () + item.getPrice () >= totalSum){
+            if(customer.getBalance() + item.getPrice () >= totalSum){
                 System.out.println ("Removing " + item + "would yield in sufficient amount of money");
                 System.out.println ("Do you accept suggestion: Press 1 for yes or 2 for no");
                 int input = IntInput.readInput ();

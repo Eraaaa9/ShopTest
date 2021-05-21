@@ -4,13 +4,19 @@ import com.example.helpers.IntInput;
 import com.example.helpers.PaginationPrinter;
 import com.example.models.Customer;
 import com.example.models.Product;
+import com.example.repositories.DataManager;
+
 import java.util.List;
 
 public class CartServiceImpl implements CartService {
     private final PaymentService paymentService;
+    private final PaginationPrinter paginationPrinter;
+    private final DataManager dataManager;
 
-    public CartServiceImpl (PaymentService paymentService) {
+    public CartServiceImpl(PaymentService paymentService, PaginationPrinter paginationPrinter, DataManager dataManager) {
         this.paymentService = paymentService;
+        this.paginationPrinter = paginationPrinter;
+        this.dataManager = dataManager;
     }
 
     public void showCart(Customer customer){
@@ -36,6 +42,7 @@ public class CartServiceImpl implements CartService {
     }
 
     public void showItemsInTheCart (Customer customer, int page){
+        System.out.println("Current items in the cart.");
         System.out.println ("Choose an item to remove: ");
         List<Product> items = customer.getCart ().getItems ();
         int maxPage = (int) Math.ceil ((double) items.size ()/3);
@@ -47,12 +54,17 @@ public class CartServiceImpl implements CartService {
         int input =IntInput.readInput ();
         switch (input){
             case 1:
+                dataManager.removeFromCart(items.get((page*3-3)), customer);
                 System.out.println (items.remove ((page * 3) - 3) + " was removed from the cart");
                 break;
             case 2:
+                if(items.size()<2) break;
+                dataManager.removeFromCart(items.get((page*3-2)), customer);
                 System.out.println (items.remove ((page * 3) - 2) + " was removed from the cart");
                 break;
             case 3:
+                if(items.size()<3) break;
+                dataManager.removeFromCart(items.get((page*3-1)), customer);
                 System.out.println (items.remove ((page * 3) - 1) + " was removed from the cart");
                 break;
             case 4:
@@ -77,10 +89,7 @@ public class CartServiceImpl implements CartService {
     private String listCartProducts(List<Product> products, int page){
         if(products.isEmpty())return "Cart is empty";
         StringBuilder result = new StringBuilder();
-        PaginationPrinter.getFirstOptions(products, page, result);
-        result.append("4.Next page ");
-        result.append("5.Previous page ");
-        result.append("6.Back ");
+        paginationPrinter.getFirstOptions(products, page, result);
         return result.toString ();
     }
 }

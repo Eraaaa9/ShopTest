@@ -8,15 +8,12 @@ public class IntInput {
         while(true) {
             Scanner scanner = new Scanner (System.in);
             input = scanner.nextLine ();
-            if (!isNumeric (input)) {
-                System.out.println ("Please input an Integer.");
-                continue;
-            }
+            if (!isNumeric (input)) System.out.println("Please input an Integer.");
             else return Integer.parseInt(input);
         }
 
     }
-    public static boolean isNumeric(String str){
+    private static boolean isNumeric(String str){
         if(str == null){
             return false;
         }

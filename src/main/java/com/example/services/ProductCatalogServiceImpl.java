@@ -12,6 +12,7 @@ public class ProductCatalogServiceImpl implements ProductCatalogService {
         this.dataManager = dataManager;
     }
 
+    @Override
     public ProductsList showCatalog() {
         ProductCatalog catalog = dataManager.fill();
         System.out.println("Choose a category (number or name)");

@@ -40,7 +40,7 @@ public class MainMenu {
                 cartService.showCart (customer);
                 break;
             case 4:
-                authorizationService.authorizeUser ();
+                authorizationService.authorizeUser();
                 break;
             default:
                 showMenu (customer);
