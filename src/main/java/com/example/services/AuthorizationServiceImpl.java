@@ -5,7 +5,6 @@ import com.example.helpers.IntInput;
 import com.example.models.Customer;
 import com.example.repositories.DataManager;
 
-import java.sql.*;
 import java.util.Scanner;
 
 public class AuthorizationServiceImpl implements AuthorizationService {
@@ -46,14 +45,16 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         System.out.println("Enter your password: ");
         String password = scanner.nextLine();
         customer.setPassword(password);
-        String cardNumber = creditCardChecker.creditCardCheck(customer);
+        int user_id = dataManager.addUserToDatabase(name, password);
+        customer.setUser_id(user_id);
+        String cardNumber = creditCardChecker.creditCardCheck();
         customer.setCardNumber(cardNumber);
-        dataManager.addUserToDatabase(name, password, cardNumber);
+        dataManager.updateCreditCardNumber(customer, cardNumber);
         return customer;
     }
 
     private Customer loginUser() {
-        Customer customer = null;
+        Customer customer;
         while(true) {
             System.out.print("Enter your name: ");
             System.out.println("           or press 0 to get back.");

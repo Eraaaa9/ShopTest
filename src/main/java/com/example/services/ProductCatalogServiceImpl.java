@@ -14,10 +14,15 @@ public class ProductCatalogServiceImpl implements ProductCatalogService {
 
     @Override
     public ProductsList showCatalog() {
-        ProductCatalog catalog = dataManager.fill();
-        System.out.println("Choose a category (number or name)");
-        System.out.println(catalog);
+        ProductCatalog catalog = dataManager.fillCatalogWithCategories();
+        System.out.println("Choose a category: ");
+        int page = 1;
+        printCatalog(catalog, page);
         int categoryInput = IntInput.readInput();
         return catalog.getCategory().get(categoryInput-1);
+    }
+
+    private void printCatalog(ProductCatalog catalog, int page) {
+
     }
 }

@@ -1,19 +1,26 @@
 package com.example.services;
 
+import com.example.helpers.CreditCardChecker;
 import com.example.helpers.IntInput;
 import com.example.models.Customer;
 import com.example.repositories.DataManager;
 
 public class AccountHandleServiceImpl implements AccountHandleService {
     private final DataManager dataManager;
+    private final CreditCardChecker creditCardChecker;
 
-    public AccountHandleServiceImpl(DataManager dataManager) {
+    public AccountHandleServiceImpl(DataManager dataManager, CreditCardChecker creditCardChecker) {
         this.dataManager = dataManager;
+        this.creditCardChecker = creditCardChecker;
     }
 
     @Override
-    public void handle (Customer customer) {
-        printOptions ();
+    public void handleAccountPage (Customer customer) {
+        System.out.print("1. Show account ");
+        System.out.print("2. Deposit to account ");
+        System.out.print("3. Withdraw from account ");
+        System.out.print("4. Add credit card ");
+        System.out.println("5. Back to main menu ");
         int input = IntInput.readInput ();
         switch (input){
             case 1:
@@ -29,17 +36,16 @@ public class AccountHandleServiceImpl implements AccountHandleService {
                 int withdrawAmount = IntInput.readInput ();
                 withdraw (customer, withdrawAmount);
                 break;
+            case 4:
+                String creditCard = creditCardChecker.creditCardCheck();
+                customer.setCardNumber(creditCard);
+                dataManager.updateCreditCardNumber(customer, creditCard);
             default:
                 return;
         }
-        handle (customer);
+        handleAccountPage (customer);
     }
-    private void printOptions(){
-        System.out.print("1. Show account ");
-        System.out.print("2. Deposit to account ");
-        System.out.print("3. Withdraw from account ");
-        System.out.println("4. Back to main menu ");
-    }
+
     private void withdraw (Customer customer, int withdrawAmount) {
         if(customer.getBalance() < withdrawAmount){
             System.out.println("Insufficient funds.");

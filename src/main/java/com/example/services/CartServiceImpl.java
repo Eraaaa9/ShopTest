@@ -9,48 +9,46 @@ import com.example.repositories.DataManager;
 import java.util.List;
 
 public class CartServiceImpl implements CartService {
-    private final PaymentService paymentService;
     private final PaginationPrinter paginationPrinter;
     private final DataManager dataManager;
+    private final OrderService orderService;
 
-    public CartServiceImpl(PaymentService paymentService, PaginationPrinter paginationPrinter, DataManager dataManager) {
-        this.paymentService = paymentService;
+    public CartServiceImpl(PaginationPrinter paginationPrinter, DataManager dataManager, OrderService orderService) {
+
         this.paginationPrinter = paginationPrinter;
         this.dataManager = dataManager;
+        this.orderService = orderService;
     }
 
     public void showCart(Customer customer){
-        printOptions();
+        System.out.print("1.Show items in cart ");
+        System.out.print("2.Proceed to payment ");
+        System.out.print("3.Back to menu ");
         int input = IntInput.readInput();
         switch (input) {
             case 1:
                 showItemsInTheCart (customer, 1);
                 break;
             case 2:
-                paymentService.makePayment (customer);
+                orderService.createOrder (customer);
                 break;
             default:
                 return;
         }
-        showCart (customer);
-    }
-
-    private void printOptions () {
-        System.out.print("1.Show items in cart ");
-        System.out.print("2.Proceed to payment ");
-        System.out.print("3.Back to menu ");
     }
 
     public void showItemsInTheCart (Customer customer, int page){
-        System.out.println("Current items in the cart.");
-        System.out.println ("Choose an item to remove: ");
         List<Product> items = customer.getCart ().getItems ();
         int maxPage = (int) Math.ceil ((double) items.size ()/3);
+        if(items.isEmpty()){
+            System.out.println("Cart is empty");
+            showCart(customer);
+        }
+        System.out.println("Current items in the cart.");
+        System.out.println ("Choose an item to remove: ");
         System.out.println ("Page " + page + "/" + maxPage);
         System.out.println (listCartProducts (items, page));
-        if(items.isEmpty()){
-            return;
-        }
+
         int input =IntInput.readInput ();
         switch (input){
             case 1:

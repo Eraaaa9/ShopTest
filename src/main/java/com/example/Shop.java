@@ -16,14 +16,18 @@ public class Shop {
         PaginationPrinter paginationPrinter = new PaginationPrinter();
         Customer customer = authorizationService.authorizeUser ();
         ProductCatalogService productCatalogService = new ProductCatalogServiceImpl (dataManager);
-        ProductListService productListService = new ProductListServiceImpl (paginationPrinter);
-        PaymentService paymentService = new PaymentServiceImpl ();
-        CartService cartService = new CartServiceImpl (paymentService, paginationPrinter, dataManager);
-        AccountHandleService accountHandleService = new AccountHandleServiceImpl (dataManager);
-        MainMenu mainMenu = new MainMenu (productListService, productCatalogService, authorizationService,
+        ProductListService productListService = new ProductListServiceImpl (paginationPrinter, dataManager);
+        PaymentService paymentService = new PaymentServiceImpl (creditCardChecker, dataManager);
+        OrderService orderService = new OrderServiceImpl(dataManager);
+        CartService cartService = new CartServiceImpl (paginationPrinter, dataManager, orderService);
+        AccountHandleService accountHandleService = new AccountHandleServiceImpl (dataManager, creditCardChecker);
+        MainMenu mainMenu = new MainMenu (productListService, productCatalogService,
                 accountHandleService, cartService);
         while (true) {
-            mainMenu.showMenu(customer);
+            if(customer == null){
+                customer = authorizationService.authorizeUser();
+            }
+            customer = mainMenu.showMenu(customer);
         }
     }
 }

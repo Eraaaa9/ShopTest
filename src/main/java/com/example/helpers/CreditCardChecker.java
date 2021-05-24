@@ -1,13 +1,11 @@
 package com.example.helpers;
 
-import com.example.models.Customer;
-
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CreditCardChecker {
-    public String creditCardCheck(Customer customer) {
+    public String creditCardCheck() {
         boolean accepted = false;
         while (!accepted) {
             System.out.println("Add card number (Optional, press Enter to skip)");

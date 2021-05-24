@@ -5,13 +5,17 @@ import com.example.helpers.PaginationPrinter;
 import com.example.models.Customer;
 import com.example.models.Product;
 import com.example.models.ProductsList;
+import com.example.repositories.DataManager;
+
 import java.util.ArrayList;
 
 public class ProductListServiceImpl implements ProductListService {
     private final PaginationPrinter paginationPrinter;
+    private final DataManager dataManager;
 
-    public ProductListServiceImpl(PaginationPrinter paginationPrinter) {
+    public ProductListServiceImpl(PaginationPrinter paginationPrinter, DataManager dataManager) {
         this.paginationPrinter = paginationPrinter;
+        this.dataManager = dataManager;
     }
 
     @Override
@@ -46,7 +50,6 @@ public class ProductListServiceImpl implements ProductListService {
                 break;
             default:
         }
-
     }
 
     public String listProducts(ProductsList productsList, int page){
@@ -55,9 +58,11 @@ public class ProductListServiceImpl implements ProductListService {
         paginationPrinter.getFirstOptions(products, page, result);
         return result.toString ();
     }
+
     @Override
     public void addToCart(Product product, Customer customer) {
         customer.getCart().addProduct(product);
+        dataManager.addToCart(product, customer);
         System.out.println (product + " added to the cart");
     }
 }
